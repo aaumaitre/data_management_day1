@@ -192,7 +192,7 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
   line-height: 1.1em;
 }
 .hljs-github .hljs {
-  background: #fce1ef;
+  background: ##def5fc;
 }
 .table.dataTable.display tbody tr.even {
   background-color: #FFFFFF;

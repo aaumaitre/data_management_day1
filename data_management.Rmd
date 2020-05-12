@@ -1,0 +1,500 @@
+---
+title: "Data management with R"
+author: "Ariane Aumaitre"
+institute: "European University Institute"
+date: "14/05/2020"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r xaringan-themer, include = FALSE}
+library(xaringanthemer)
+library(emo)
+duo_accent(
+  primary_color = "#00BFFE",
+  secondary_color = "#00BFFE",
+  title_slide_text_color = "#FFFFFF",
+  text_bold_color = "#00BFFE",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Droid Mono"),
+  text_font_size = "20px",
+  code_font_size = "0.5em",
+  header_h1_font_size = "45px",
+  extra_css = list(
+    ".title-slide h1" = list(
+      "font-size" = "52px",
+      "line-height" = "1.1em"),
+    ".title-slide h2" = list(
+    "margin-top" = "-10px",
+    "margin-bottom" = "40px"),
+    ".title-slide h3" = list(
+    "margin-top" = "40px.",
+    "line-height" = "0.3em"),
+    ".remark-slide-content" = list(
+      "line-height" = "1.1em"),
+    ".hljs-github .hljs" = list(
+    "background" ="#def5fc" ),
+    ".table.dataTable.display tbody tr.even" = list(
+  "background-color" = "#FFFFFF"),
+  ".remark-slide thead, .remark-slide tfoot, .remark-slide tr:nth-child(even)" = list("background" = "#FFFFFF")
+    
+    )
+  )
+```
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+
+background-image: url(https://i.ibb.co/kyMCbQ7/r-first-then.png)
+background-size: 1000px
+background-position: 50% 50%
+class: bottom 
+
+##### Illustration: Allison Horst
+---
+background-image: url(https://i.imgur.com/bmJmSXI.png)
+background-size: 800px
+background-position: 50% 75%
+
+# Goals of this workshop
+&nbsp;
+&nbsp;
+* Giving you a comprehensive set of tools to **manage your data**
+
+* Focus on how to **get your data ready** for analysis 💻
+
+* We will cover **importing**, **tidying**, **transforming** and some **visualization**
+
+---
+
+# Getting started: libraries and data
+
+First, libraries: 
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+```
+
+Loading a csv file:
+
+```{r}
+data <- read.csv("workshop_data.csv")
+
+data
+```
+
+---
+
+#Importing data: packages
+&nbsp;
+&nbsp;
+&nbsp;
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-color:#aaa;border-spacing:0;}
+.tg td{background-color:#fff;border-bottom-width:1px;border-color:#aaa;border-style:solid;border-top-width:1px;
+  border-width:0px;color:#333;font-family:Josefin Sans;font-size:16px;overflow:hidden;padding:16px 20px;
+  word-break:normal;}
+.tg th{background-color:#f38630;border-bottom-width:1px;border-color:#aaa;border-style:solid;border-top-width:1px;
+  border-width:0px;color:#fff;font-family:Josefin Sans;font-size:16px;font-weight:normal;overflow:hidden;
+  padding:14px 18px;word-break:normal;}
+.tg .tg-y3zf{background-color:#ffffff;border-color:#00bffe;text-align:center;vertical-align:top}
+.tg .tg-f4o9{background-color:#ffffff;border-color:#00bffe;font-style:italic;text-align:center;vertical-align:top}
+.tg .tg-ogoq{background-color:#ffffff;border-color:#00bffe;font-style:italic;text-align:center;vertical-align:top}
+.tg .tg-xads{background-color:#ffffff;border-color:#00bffe;color:#00bffe;font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-24j6{background-color:#ffffff;border-color:#00bffe;font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-elfb{background-color:#ffffff;border-color:#00bffe;font-weight:bold;text-align:center;vertical-align:top}
+.tg .tg-b2qw{background-color:#ffffff;border-color:#00bffe;text-align:center;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-xads">Package</th>
+    <th class="tg-xads">Files</th>
+    <th class="tg-xads">Functions</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-24j6">haven</td>
+    <td class="tg-ogoq">Stata, SPSS, SAS</td>
+    <td class="tg-y3zf">read_dta("yourfile.dta")<br>read_sav()<br>read_sas()<br> <br></td>
+  </tr>
+  <tr>
+    <td class="tg-elfb">readr</td>
+    <td class="tg-f4o9">csv</td>
+    <td class="tg-b2qw">read_csv("yourfile.csv")<br><br> </td>
+  </tr>
+  <tr>
+    <td class="tg-24j6">readxl</td>
+    <td class="tg-ogoq">xls / xlsx</td>
+    <td class="tg-y3zf">read_excel("yourfile.xlsx")<br>read_excel("yourfile.xlsx", sheet="name")<br></td>
+  </tr>
+</tbody>
+</table>
+
+---
+class: inverse, center, middle
+# 1. Getting to know your data
+---
+# Quick revision of data types 📋
+&nbsp;
+&nbsp;
+&nbsp;
+
+* In **R**, uni-dimendional data are called **vectors**. They can be **numeric, integers, character, factors or logical**.
+
+```{r, eval=FALSE}
+character_vector <- c("a", "b")
+numeric_vector <- c(1,2)
+```
+
+* Useful functions to convert vectors: `as.numeric(data$variable)`, `as.character()`,...
+
+* Most of the times we will be working with many vectors at the same time, brought together into a **data frame** or a **tibble**
+
+```{r, eval = FALSE}
+my_df <- data.frame(character_vector, numeric_vector)
+```
+* Not everything in R can be stored in a data frame - sometimes you will be working with **lists**
+
+---
+# Getting to know your data🔎️
+&nbsp;
+&nbsp;  
+`head()` shows the first 6 rows of your data. 
+
+To see more (or less), you can do `head(data, n)`
+
+```{r}
+head(data)
+```
+---
+# Getting to know your data🔎
+&nbsp;
+&nbsp;
+`str()` gives you an overview of data types
+  
+```{r}
+str(data)
+```
+---
+# Getting to know your data🔎
+&nbsp;
+&nbsp;
+
+`summary()` gives you summary statistics of your data. 
+You can apply it  to the whole data frame or **to a single variable**
+  
+```{r}
+summary(data$net_income)
+```
+
+```{r}
+summary(data$gross_income)
+```
+---
+class: inverse, center, middle
+# 2. Data cleaning and transformation
+---
+background-image: url(https://www.khstats.com/img/dplyr_image.jpg)
+background-size: 400px
+background-position: 50% 90%
+# Let's start cleaning 🧹
+&nbsp;
+&nbsp;
+
+* You will learn how to **filter**, **count** and **arrange** observations, **select** columns, **transform** variables, **create** new columns...
+
+* We will also learn how to **group** dataframes to **summarize** information. 
+
+* Our main tool: the **dplyr** package
+
+  
+---
+# Filtering data
+</br>
+* The `filter()` function 'returns rows with matching conditions'
+```{r}
+filtered_data <- filter(data, net_income >0)
+
+head(filtered_data)
+```
+
+---
+# How to use filter()
+
+</br>
+
+* Comparison operators: `==, >, <, >=, <=, !=`
+  
+```{r, eval = FALSE}
+filter(data, net_income > 0, sex == 2)
+```
+* The `%in%` operator
+
+```{r, eval = FALSE}
+filter(data, year_born %in% 1950:1960) #you can use any kind of vector after the in
+
+#use ! to state "not in"
+filter(data, !education %in% 200:450)
+```
+
+* Filtering NAs out with `is.na()` (be careful ⚠️)
+
+```{r, eval = FALSE}
+filter(data, !is.na(education))
+```
+
+---
+background-image: url(https://i.imgur.com/8oZIMsr.png)
+background-size: 800px
+background-position: 50% 80%
+  
+# How to use filter()
+  </br>
+
+* Logical operators: `&` and `|` (or)
+
+```{r, eval = FALSE}
+
+filter(mydata, year_born > 1999 | year_born < 1952)
+```
+---
+
+# Some syntax: the pipe %>%
+
+Compare these two chunks *that produce the same output*
+
+.pull_left[
+```{r, eval = FALSE}
+filtered_data <- filter(data, net_income >0)
+```
+]
+.pull_right[
+```{r, eval = FALSE}
+filtered_data <- data%>%
+filter(net_income>0)
+```
+]
+
+* The **pipe operator** can be roughly ranslated as **'then'**: _take my data, do this operation, then take the output and perform another one_
+
+* A way of combining **multiple operations** in your code
+
+* It helps writing shorter, more efficient code and **avoid repetitions**
+
+* Code becomes readable from left-to-right, top-to-bottom
+
+---
+background-image: url(https://i.imgur.com/qG4Ad2E.png)
+background-size: 400px
+background-position: 50% 20%
+
+#An illustration
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+</br>
+
+.center[![](https://i.imgur.com/itdDc7Q.gif)]
+
+---
+# The select() function
+
+</br>
+Use `select()` to keep only the variables you're interested in
+
+```{r}
+selected_data <- data%>%
+                    select(sex, year_born, net_income)
+
+head(selected_data)
+```
+
+---
+
+# Using select()
+</br>
+
+* Select by **column name**:
+```{r, eval = FALSE}
+data%>%
+  select(a,b,c)
+```
+
+* Select by column **position**:
+```{r, eval = FALSE}
+data%>%
+  select(1:5, 8)
+```
+
+* Select all columns **except one**:
+
+```{r, eval = FALSE}
+data%>%
+  select(-1)
+```
+
+* Negative selection of a **group of columns**:
+
+```{r, eval = FALSE}
+data%>%
+  select(-c(a,b,c))
+```
+
+
+
+
+
+---
+# Chaining operations and arrange()
+</br>
+
+`arrange()` can be used to order observations by a variable, in ascending or descending order
+
+```{r}
+arranged_data <- data%>%
+  filter(sex ==2)%>%
+  select(year_born, gross_income)%>%
+  arrange(desc(gross_income))
+
+head(arranged_data)
+```` 
+
+---
+
+# Transforming data with mutate()
+
+</br>
+
+`mutate()` can be used for creating new variables, while preserving existing ones
+
+```{r}
+new_data <- data%>%
+  mutate(taxes_and_transfers = gross_income - net_income)
+
+summary(new_data$taxes_and_transfers)
+head(new_data)
+```
+---
+# Useful functions within mutate()
+</br>
+
+* `ifelse()` to return a column filled with one of two values depending on a condition
+
+```{r, eval = FALSE}
+data%>%
+  mutate(high_education = ifelse(education == 500, 1, 0))
+```
+
+* `case_when()` is the easiest way to expand ifelse: 
+
+```{r, eval = FALSE}
+data%>%
+  mutate(edu_clean = case_when(education %in% 0:100 ~ "Primary or below",
+                                   education %in% 200:354 ~ "Lower secondary",
+                                   education %in% 400:450 ~ "Upper secondary",
+                                   education == 500 ~ "Higher education"))
+```
+
+* `replace()` to change values in a column for a replacement
+
+* `cumsum()`
+
+---
+# Packages you may find useful
+background-image: url(https://i.ibb.co/kyMCbQ7/r-first-then.png)
+background-size: 700px
+background-position: 50% 90%
+</br>
+
+https://github.com/allison
+horst/stats-illustrations/raw/master/rstats-artwork/dplyr_mutate.png
+
+* **stringr** for working with text data and character vectors - functions for string cleaning, trimming and working with patterns
+
+* **forcats** for working with categorical data: recoding factors, collapsing values...
+
+* **lubridate** makes working with dates easier 
+
+---
+# Working with groups
+</br>
+* If you want to work with groups within your data, you need to use the `group_by()` function
+
+* `group_by()` does not produce any output, but whichever operation comes afterwards will be performed *by group*
+
+* After group by, you can either use `mutate()` if you want to keep all your observations or `summarize()` if you are only interested in the group summary
+
+* If you want to keep working with the dataframe as a whole after your group operations, you should always remember to `ungroup()`
+
+
+---
+# summarize()
+</br>
+* After grouping by your variable(s) of interest, you can use `summarize()` with any function you want to create summary variables
+
+```{r}
+summary_data <- data%>%
+  mutate(age = 2018 - year_born,
+         age_group = case_when(age %in% 0:18 ~ "0-18",
+                      age %in% 19:35 ~ "19-35",
+                      age %in% 36:65 ~ "36-65",
+                      age > 65 ~ "65+"))%>%
+  group_by(age_group)%>%
+  summarize(mean_income = mean(net_income, na.rm = TRUE),
+            min_income = min(net_income, na.rm = TRUE),
+            max_income = max(net_income, na.rm = TRUE))
+
+head(summary_data)
+```
+---
+# Useful functions for inequality
+
+</br> 
+* Useful packages: **laeken**, **ineq**
+
+* They include functions for computing different inequality and poverty measures, as well as some basic plotting
+
+
+```{r}
+library(ineq)
+
+summary_data <- data%>%
+  summarize(gini_net = Gini(net_income),
+            gini_gross = Gini(gross_income))
+
+summary_data
+```
+
+---
+
+# Other useful dplyr functions
+</br>
+* `distinct()` to select unique rows from a data frame
+
+* `top_n()` to filter the top n observations (you can use it in combination with `arrange()`)
+
+* `ntile()` ranks values into the number of groups you provide
+
+* `transmute()` works just like `mutate`, but drops existing variables (it works as a combination of `select` and `mutate`)
+
+* `rename()` to change the name of the variables in your data frame
+
+* All functions: https://dplyr.tidyverse.org/reference/index.html
